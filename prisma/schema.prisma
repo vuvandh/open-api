@@ -24,7 +24,8 @@ model Todo {
   category    TodoCategory? @relation(fields: [categoryId], references: [id])
   priorityId  String?
   priority    TodoPriority? @relation(fields: [priorityId], references: [id])
-  
+  labels    TodoLabelLink[]
+
   @@map("todo")
 }
 
@@ -49,3 +50,22 @@ model TodoPriority {
   
   @@map("todo_priorities")
 }
+model TodoLabel {
+  id        String          @id @default(uuid())
+  name      String          @unique
+  color     String?
+  todos     TodoLabelLink[]
+  createdAt DateTime        @default(now())
+  @@map("todo_labels")
+}
+
+model TodoLabelLink {
+  todoId    String
+  labelId   String
+  todo      Todo      @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  label     TodoLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([todoId, labelId])
+  @@map("todo_label_links")
+}
+
